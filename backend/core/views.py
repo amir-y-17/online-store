@@ -63,8 +63,15 @@ class PasswordResetConfirmView(APIView):
             return Response({"error": "Invalid or expired token"}, status=400)
 
         new_password = request.data.get("password")
-        if not new_password:
-            return Response({"error": "Password is required"}, status=400)
+        confirm_password = request.data.get("confirm_password")
+
+        if not new_password or not confirm_password:
+            return Response(
+                {"error": "Both password and confirm password are required"}, status=400
+            )
+
+        if new_password != confirm_password:
+            return Response({"error": "Passwords do not match"}, status=400)
 
         user.set_password(new_password)
         user.save()
