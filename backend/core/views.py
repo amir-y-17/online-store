@@ -2,14 +2,43 @@ from .models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework import generics
-from .serializers import UserSerializer
 from django.core.mail import send_mail
 from rest_framework.views import APIView
 from config.settings import EMAIL_HOST_USER
 from rest_framework.response import Response
 from django.utils.encoding import force_bytes
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import UserSerializer, UserRegisterSerializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+
+
+class UserRegisterView(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+
+            refresh_token = str(refresh)
+            access_token = str(refresh.access_token)
+
+            response = Response(
+                {"message": "User registered successfully"},
+                status=status.HTTP_201_CREATED,
+            )
+            tokens = {
+                "refresh_token": refresh_token,
+                "access_token": access_token,
+            }
+            for name, token in tokens.items():
+                response.set_cookie(
+                    key=name, value=token, httponly=True, secure=False, samesite="Lax"
+                )
+            return response
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetRequestView(APIView):
