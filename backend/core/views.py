@@ -8,6 +8,7 @@ from config.settings import EMAIL_HOST_USER
 from rest_framework.response import Response
 from django.utils.encoding import force_bytes
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import AuthenticationFailed
 from .serializers import UserSerializer, UserRegisterSerializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -39,6 +40,30 @@ class UserRegisterView(APIView):
             return response
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RefreshTokenCookieView(APIView):
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            raise AuthenticationFailed("Refresh token not found in cookies")
+
+        try:
+            token = RefreshToken(refresh_token)
+            access_token = str(token.access_token)
+        except Exception:
+            raise AuthenticationFailed("Invalid refresh token")
+
+        response = Response({"message": "OK"})
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+        )
+        return response
 
 
 class PasswordResetRequestView(APIView):
