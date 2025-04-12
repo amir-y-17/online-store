@@ -1,8 +1,31 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { data, Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import "./Register.css";
 export default function Register() {
+
+
+  // const newUser = {
+  //   username: 'babak',
+  //   email:'babaki@gamil.com',
+  //   password: '142536'
+  // };
+  // useEffect(()=>{
+  //   fetch(`http://localhost:8000/api/auth/register/` ,{
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body : JSON.stringify(newUser)
+
+  //   }).then(res => {
+  //     console.log(res);
+  //     res.json()
+  //   }).then(data => {
+  //     console.log(data)
+  //   })
+  // },[])
+
   return (
     <>
       <Navbar />
