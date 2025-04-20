@@ -48,7 +48,9 @@ export default function Navbar() {
           )}
         </div>
         <div className="left-navbar">
+          <Link to={'/login'}>
           <button className="login">ثبت نام / ورود</button>
+          </Link>
         </div>
       </div>
     </>

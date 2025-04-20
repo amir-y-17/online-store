@@ -44,7 +44,6 @@ body {
 }
 .form-control {
   border-radius: 50px !important;
-  border: none !important;
   background-color: #e2dcdc !important;
   outline: none !important;
   font-size: 1.7rem !important;
