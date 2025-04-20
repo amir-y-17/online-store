@@ -1,13 +1,14 @@
-import {Link } from "react-router-dom";
+import {Link , useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import "./Register.css";
-
+import swal from "sweetalert";
 import Button from "../../Components/Form/Button";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 export default function Register() {
+  const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -25,8 +26,35 @@ export default function Register() {
         .min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد")
         .required("رمز عبور الزامی است"),
     }),
-    onSubmit: (values) => {
-      console.log("Form submitted:", values);
+    onSubmit: async (values) => {
+      try {
+        
+        const response = await fetch(`http://localhost:8000/api/auth/register/` , {
+          method:'POST',
+          credentials : "include",
+          headers : {
+            "Content-Type":"application/json",
+          },
+          body : JSON.stringify(values)
+        });
+        swal({
+          title: "ثبت نام با موفقیت انجام شد",
+          icon: "success",
+          buttons: "تایید",
+        }).then((value) => {
+          navigate('/')
+        })
+        if(!response.ok){
+          const errorDate = await response.json();
+          throw new 
+          Error (errorDate.message || "خطایی رخ داده است ");
+        }
+        const data = await response.json;
+        console.log('ثبت نام  موفق ' , data);
+      }catch(error) {
+        console.log("خطا در ثبت نام" , error.message)
+      }
+      
     },
   });
   const getBorderColor = (field) => {
@@ -35,6 +63,7 @@ export default function Register() {
     }
     return "1px solid #ccc";
   };
+  
 
   return (
     <>
@@ -102,7 +131,7 @@ export default function Register() {
                     <div style={{ color: "red" }}>{formik.errors.password}</div>
                   )}
                 </div>
-                <Button className="btn btn-primary mt-3 w-100 " type="submit">
+                <Button className="btn btn-primary mt-3 w-100 " type="submit"  >
                   ثبت نام
                 </Button>
                 <div className="link-login">
