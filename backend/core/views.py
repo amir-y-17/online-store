@@ -26,7 +26,7 @@ class UserRegisterView(APIView):
             access_token = str(refresh.access_token)
 
             response = Response(
-                {"message": "User registered successfully"},
+                {"message": "User registered successfully", "username": user.username},
                 status=status.HTTP_201_CREATED,
             )
             tokens = {
